@@ -166,7 +166,6 @@ def main(page: ft.Page):
     default_height = 565
 
     # page settings
-    page.window.icon = os.path.join(BASE_DIR, "assets", "next_up.png")
     page.title = "NextUp"
     page.window.width, page.window.height = get_dimensions()
     page.window.center()
