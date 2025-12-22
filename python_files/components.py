@@ -19,7 +19,6 @@ class ConfirmButton(ft.ElevatedButton):
         self.on_click = callback
 
 
-
 class CancelButton(ft.OutlinedButton):
     def __init__(self, text, callback, colors, width=95, expand=False):
         super().__init__()
@@ -82,7 +81,7 @@ class NumberStepper(ft.Row):
         self.update()
 
 class NumbersOnlyField(ft.TextField):
-    def __init__(self, font_sizes, colors, value=0, max_value=None):
+    def __init__(self, font_sizes, colors, value=0, max_value=None, color=None):
         super().__init__()
         self.value=f"{value:02}"
         self.max_value = max_value
@@ -94,10 +93,14 @@ class NumbersOnlyField(ft.TextField):
         self.text_align = ft.TextAlign.CENTER
         self.border_color = "transparent"
         self.cursor_color = colors.primary
+        self.color = color
+        self.on_change = self.handle_change
+        
+        # self.parent = parent
+        self.colors = colors
+        self.font_sizes = font_sizes
 
-        self.on_change = self.validate_value
-
-    def validate_value(self, e):
+    def handle_change(self, e):
         # To make sure program doesnt crash if invalid input in number field
         try:
             val = int(self.value or 0)
@@ -109,11 +112,24 @@ class NumbersOnlyField(ft.TextField):
                 val = self.max_value
             elif val < 0:
                 val = 0
-        
-        self.value = f"{val:02}"
-        self.update()
-        
 
+        self.value = f"{val:02}"
+
+        hours_field = self.parent.controls[0]
+        minutes_field = self.parent.controls[2]
+        seconds_field = self.parent.controls[4]
+        timestamp = [hours_field, minutes_field, seconds_field]
+
+        # Updating the color of timestamp to either highlight non zero timestamp or to reset it if its a zero timestamp
+        if val > 0:
+            for field in timestamp:
+                field.color = self.colors.primary_3
+        elif all(int(field.value) == 0 for field in timestamp):
+            for field in timestamp:
+                field.color = None
+        
+        self.parent.update()
+             
 class PlaylistEntry(ft.Container):
     def __init__(self, name, vid_num, hours, minutes, seconds, colors, font_sizes, parent_list:ft.ListView, page, delete_callback):
         super().__init__()
@@ -140,9 +156,10 @@ class PlaylistEntry(ft.Container):
         
         self.video_number_stepper = NumberStepper(colors=colors, font_sizes=font_sizes, value=vid_num)
 
-        self.hours_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=hours)
-        self.minutes_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=minutes, max_value=59)
-        self.seconds_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=seconds, max_value=59)
+        timestamp_color = None if (hours == 0) and (minutes == 0) and (seconds == 0) else colors.primary_3 # Setting the color of timestamp to either highlight non zero timestamp or to set default (None) it if its a zero timestamp
+        self.hours_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=hours, color=timestamp_color)
+        self.minutes_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=minutes, color=timestamp_color, max_value=59)
+        self.seconds_field = NumbersOnlyField(font_sizes=font_sizes, colors=colors, value=seconds, color=timestamp_color, max_value=59)
 
         self.timestamp_container = ft.Container(
             content=ft.Row([self.hours_field, ft.Text(":", weight=ft.FontWeight.W_500), self.minutes_field, ft.Text(":", weight=ft.FontWeight.W_500), self.seconds_field]),
@@ -201,9 +218,10 @@ class PlaylistEntry(ft.Container):
         self.page.update()
 
     def reset_timestamp(self, e=None):
-        self.hours_field.value = f"{0:02}"
-        self.minutes_field.value = f"{0:02}"
-        self.seconds_field.value = f"{0:02}"
+        for field in (self.hours_field, self.minutes_field, self.seconds_field):
+            field.value = f"{0:02}"
+            field.color = None # Resetting color for zero timestamp
+
         self.update()
     
     def handle_key(self, e:ft.KeyboardEvent):

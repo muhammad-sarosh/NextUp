@@ -152,6 +152,7 @@ def main(page: ft.Page):
     colors = SimpleNamespace(
         primary="#00ae77",
         primary_2="#01bd82",
+        primary_3="#76dfbe",
         secondary="#16181a",
         secondary_2="#1f2123",
         secondary_3="#26292B"
@@ -173,6 +174,12 @@ def main(page: ft.Page):
     page.on_keyboard_event = handle_key
     page.window.prevent_close = True
     page.window.on_event = handle_window_close
+    page.theme = ft.Theme(
+        scrollbar_theme=ft.ScrollbarTheme(
+            thickness=5.0,
+            radius=10,
+        )
+    )
 
     # Main setup
     
