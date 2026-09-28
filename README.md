@@ -2,6 +2,12 @@
 
 A simple and intuitive playlist manager that helps you keep track of your video playlists and viewing progress.
 
+## Screenshot
+
+![NextUp screenshot](NextUpScreenshot.png)
+
+Figure: A quick look at NextUp's main UI — add playlists, set video number and timestamp.
+
 ## Features
 
 - **Add and manage playlists**: Create multiple playlists with custom names
@@ -9,12 +15,6 @@ A simple and intuitive playlist manager that helps you keep track of your video 
 - **Persistent storage**: Your playlists and progress are automatically saved
 - **Clean interface**: Simple, easy-to-use design
 - **Cross-platform**: Works on Windows, Linux, and as a Python application
-
-## Screenshot
-
-![NextUp screenshot](NextUpScreenshot.png)
-
-Figure: A quick look at NextUp's main UI — add playlists, set video number and timestamp.
 
 ## How to Use
 
